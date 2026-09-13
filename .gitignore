@@ -4,6 +4,10 @@ dist/
 # generated types
 .astro/
 
+# Python cache
+__pycache__/
+*.py[cod]
+
 # dependencies
 node_modules/
 
