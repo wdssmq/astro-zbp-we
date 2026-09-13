@@ -1,0 +1,24 @@
+---
+interface Props {
+  total: number
+  rss: number
+  app: number
+}
+
+const { total, rss, app } = Astro.props
+---
+
+<section class="grid grid-cols-1 gap-3.5 pt-8 md:grid-cols-3" aria-label="数据统计">
+  <div class="flex min-h-31.5 flex-col justify-between border border-[#bfd0c5] bg-[#dce9df] p-5">
+    <strong class="font-serif text-[2.6rem] leading-none">{total}</strong>
+    <span class="text-sm text-[#6b8178]">全部收录</span>
+  </div>
+  <div class="flex min-h-31.5 flex-col justify-between border border-[#d4ddd5] bg-[#fffdf8] p-5">
+    <strong class="font-serif text-[2.6rem] leading-none">{rss}</strong>
+    <span class="text-sm text-[#6b8178]">RSS 博客</span>
+  </div>
+  <div class="flex min-h-31.5 flex-col justify-between border border-[#d4ddd5] bg-[#fffdf8] p-5">
+    <strong class="font-serif text-[2.6rem] leading-none">{app}</strong>
+    <span class="text-sm text-[#6b8178]">应用资源</span>
+  </div>
+</section>

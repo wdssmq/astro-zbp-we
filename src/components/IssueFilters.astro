@@ -1,0 +1,68 @@
+---
+interface Props {
+  tags: string[]
+  total: number
+}
+
+const { tags, total } = Astro.props
+---
+
+<section class="flex flex-wrap items-end gap-3.5 py-6" aria-label="筛选收录内容">
+  <label class="grid gap-1.5 text-xs font-bold text-[#6b8178]">
+    内容类型
+    <select id="type-filter" class="min-h-10.5 min-w-37.5 border border-[#bfd0c5] bg-[#fffdf8] px-3 text-base font-normal text-[#183b3b] outline-none focus:border-[#b24f32]">
+      <option value="all">全部类型</option>
+      <option value="rss">RSS 博客</option>
+      <option value="app">应用资源</option>
+    </select>
+  </label>
+  <label class="grid gap-1.5 text-xs font-bold text-[#6b8178]">
+    标签
+    <select id="tag-filter" class="min-h-10.5 min-w-37.5 border border-[#bfd0c5] bg-[#fffdf8] px-3 text-base font-normal text-[#183b3b] outline-none focus:border-[#b24f32]">
+      <option value="all">全部标签</option>
+      {tags.map(tag => <option value={tag}>{tag}</option>)}
+    </select>
+  </label>
+  <button id="reset-filter" class="min-h-10.5 cursor-pointer border border-[#bfd0c5] bg-[#fffdf8] px-3 text-base text-[#183b3b] transition-colors hover:bg-[#dce9df] focus-visible:outline-2 focus-visible:outline-[#b24f32]" type="button">清除筛选</button>
+  <p id="result-count" class="m-0 ml-auto pb-2.5 text-sm text-[#6b8178]">显示 {total} 条</p>
+</section>
+
+<script>
+  const typeFilter = document.querySelector<HTMLSelectElement>('#type-filter')
+  const tagFilter = document.querySelector<HTMLSelectElement>('#tag-filter')
+  const resetFilter = document.querySelector<HTMLButtonElement>('#reset-filter')
+  const resultCount = document.querySelector('#result-count')
+  const emptyState = document.querySelector('#empty-state')
+  const cards = [...document.querySelectorAll<HTMLElement>('.issue-card')]
+
+  function updateResults() {
+    if (!typeFilter || !tagFilter || !resultCount || !emptyState)
+      return
+
+    const type = typeFilter.value
+    const tag = tagFilter.value
+    let visibleCount = 0
+
+    cards.forEach((card) => {
+      const matchesType = type === 'all' || card.dataset.type === type
+      const matchesTag = tag === 'all' || card.dataset.tags?.split('|').includes(tag)
+      const visible = matchesType && matchesTag
+      card.hidden = !visible
+      if (visible)
+        visibleCount += 1
+    })
+
+    resultCount.textContent = `显示 ${visibleCount} 条`
+    emptyState.hidden = visibleCount !== 0
+  }
+
+  typeFilter?.addEventListener('change', updateResults)
+  tagFilter?.addEventListener('change', updateResults)
+  resetFilter?.addEventListener('click', () => {
+    if (!typeFilter || !tagFilter)
+      return
+    typeFilter.value = 'all'
+    tagFilter.value = 'all'
+    updateResults()
+  })
+</script>

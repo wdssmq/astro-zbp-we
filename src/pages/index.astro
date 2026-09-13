@@ -1,8 +1,31 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content'
+import Layout from '../layouts/Layout.astro'
+import IssueCard from '../components/IssueCard.astro'
+import IssueFilters from '../components/IssueFilters.astro'
+import IssueStats from '../components/IssueStats.astro'
+import PageHeader from '../components/PageHeader.astro'
+
+const issues = (await getCollection('issues')).sort((a, b) =>
+  (a.data.name || '').localeCompare(b.data.name || '', 'zh-CN'),
+)
+const tags = [...new Set(issues.flatMap(issue => issue.data.tags))].sort(
+  (a, b) => a.localeCompare(b, 'zh-CN'),
+)
+const rssCount = issues.filter(issue => issue.data.type === 'rss').length
+const appCount = issues.filter(issue => issue.data.type === 'app').length
+
 ---
 
 <Layout>
-	<h1>Z-Blog-We 临时展示页</h1>
-	<p>折腾 Z-BlogPHP 的我们！</p>
+  <main class="mx-auto max-w-295 px-5 pb-20 pt-12 text-[#183b3b] max-md:px-4 max-md:pt-7">
+    <PageHeader />
+    <IssueStats total={issues.length} rss={rssCount} app={appCount} />
+    <IssueFilters tags={tags} total={issues.length} />
+
+    <section id="issue-list" class="grid grid-cols-1 gap-5 lg:grid-cols-2" aria-live="polite">
+      {issues.map(issue => <IssueCard issue={issue} />)}
+    </section>
+    <p id="empty-state" class="hidden py-12 text-center text-[#6b8178]">没有符合当前筛选条件的内容。</p>
+  </main>
 </Layout>

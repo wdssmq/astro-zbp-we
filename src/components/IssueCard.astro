@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  issue: CollectionEntry<'issues'>
+}
+
+const { issue } = Astro.props
+const { type, name, description, tags, rssUrl, gitRepoUrl, canonicalUrl, issueNumber, updatedAt } = issue.data
+const url = type === 'rss' ? rssUrl || canonicalUrl : gitRepoUrl
+
+function formatDate(value?: string) {
+  if (!value)
+    return ''
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('zh-CN')
+}
+---
+
+<article class="issue-card flex min-h-70 flex-col border border-[#d4ddd5] bg-[#fffdf8] p-6 shadow-[7px_7px_0_#dce9df]" data-type={type} data-tags={tags.join('|')}>
+  <div class="flex items-center justify-between gap-3">
+    <span class:list={['px-2 py-1 font-mono text-[0.7rem] font-bold tracking-[0.08em] text-[#fffdf8]', type === 'rss' ? 'bg-[#bc5b38]' : 'bg-[#39726b]']}>
+      {type === 'rss' ? 'RSS' : 'APP'}
+    </span>
+    {issueNumber && <span class="text-xs text-[#82948a]">#{issueNumber}</span>}
+  </div>
+  <h2 class="mb-2 mt-6 font-serif text-[1.55rem] leading-tight">{name}</h2>
+  <p class="m-0 flex-1 leading-[1.7] text-[#53706b]">{description}</p>
+  <div class="my-5 flex flex-wrap gap-1.75">
+    {tags.map(tag => <span class="bg-[#f0e2c9] px-2 py-1 text-xs text-[#805a38]">{tag}</span>)}
+  </div>
+  <div class="flex items-center justify-between gap-3 border-t border-[#e2e7df] pt-3.75">
+    {url && <a class="font-bold text-[#b24f32] no-underline hover:text-[#183b3b]" href={url} target="_blank" rel="noreferrer">访问链接 <span aria-hidden="true">↗</span></a>}
+    {updatedAt && <time class="text-xs text-[#82948a]" datetime={updatedAt}>更新于 {formatDate(updatedAt)}</time>}
+  </div>
+</article>
