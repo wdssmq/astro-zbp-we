@@ -41,7 +41,7 @@ jobs:
 
       - name: Commit generated content
         run: |
-          if git diff --quiet -- src/content/issues; then
+          if [[ -z "$(git status --porcelain -- src/content/issues)" ]]; then
             echo "No content changes."
             exit 0
           fi
